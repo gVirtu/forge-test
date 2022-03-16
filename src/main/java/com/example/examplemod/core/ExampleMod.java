@@ -1,9 +1,10 @@
-package com.example.examplemod;
+package com.example.examplemod.core;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
@@ -18,19 +19,27 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("examplemod")
+@Mod(ExampleMod.MODID)
 public class ExampleMod
 {
+	public static final String MODID = "examplemod";
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
     public ExampleMod() {
+    	IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    	
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        eventBus.addListener(this::setup);
         // Register the enqueueIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+        eventBus.addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+        eventBus.addListener(this::processIMC);
+        
+        // Register mod content
+        ModPaintings.SPECIAL_PAINTING_MOTIVES.register(eventBus);
+        ModEntities.ENTITIES.register(eventBus);
+        ModItems.ITEMS.register(eventBus);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
